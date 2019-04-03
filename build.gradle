@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = 'http://repo.maven.apache.org/maven2'
+    }
+    maven {
+        url "s3://agri-info-design-repository/mvnrepos"
+        credentials(AwsCredentials) {
+            accessKey AWS_ACCESS_KEY
+            secretKey AWS_SECRET_KEY
+        }
+    }
+}
+
+dependencies {
+    testCompile 'junit:junit:3.8.1'
+}
+
+group = 'uk.me.jstott'
+version = '1.1-xni06-20170214'
+description = 'jcoord'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
+}
+
+artifacts {
+    archives sourceJar
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact sourceJar
+        }
+    }
+    repositories {
+        maven {
+            url "s3://agri-info-design-repository/mvnrepos"
+            credentials(AwsCredentials) {
+                accessKey AWS_ACCESS_KEY
+                secretKey AWS_SECRET_KEY
+            }
+        }
+    }
+}
